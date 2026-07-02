@@ -1,0 +1,288 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+<title>Cape Tracker</title>
+<meta name="description" content="Track your progress toward RuneScape 3's Max Cape, Completionist Cape, Trimmed Completionist Cape, and Master Quest Cape. Auto-fill skill levels via RuneMetrics sync, check off every achievement and quest, and see time estimates for what's left — free, no login required.">
+<meta name="keywords" content="runescape 3 cape tracker, rs3 completionist cape checklist, trimmed completionist cape guide, master quest cape tracker, rs3 max cape checklist, runescape achievement tracker, rs3 mqc requirements, runescape trimmed comp cape, cape of accomplishment tracker">
+<meta name="robots" content="index, follow">
+<meta name="author" content="Cape of Accomplishment Tracker">
+<link rel="canonical" href="https://www.cape-tracker.com/">
+
+<!-- Open Graph / social previews -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Cape of Accomplishment Tracker">
+<meta property="og:url" content="https://www.cape-tracker.com/">
+<meta property="og:title" content="RuneScape 3 Cape Tracker – Max, Completionist, Trimmed & Master Quest Cape Checklist">
+<meta property="og:description" content="Track your progress toward RuneScape 3's Max Cape, Completionist Cape, Trimmed Completionist Cape, and Master Quest Cape. Auto-fill skill levels via RuneMetrics sync and check off every achievement and quest.">
+<meta property="og:image" content="https://www.cape-tracker.com/images/favicon/android-chrome-512x512.png">
+
+<!-- Twitter card -->
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="RuneScape 3 Cape Tracker – Max, Completionist, Trimmed & Master Quest Cape Checklist">
+<meta name="twitter:description" content="Track your progress toward RuneScape 3's Max, Completionist, Trimmed Completionist, and Master Quest Cape. Free, no login required.">
+<meta name="twitter:image" content="https://www.cape-tracker.com/images/favicon/android-chrome-512x512.png">
+
+<!-- Structured data -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Cape of Accomplishment Tracker",
+  "url": "https://www.cape-tracker.com/",
+  "description": "Track your progress toward RuneScape 3's Max Cape, Completionist Cape, Trimmed Completionist Cape, and Master Quest Cape. Auto-fill skill levels via RuneMetrics sync, check off every achievement and quest, and see time estimates for what's left.",
+  "applicationCategory": "GameApplication",
+  "operatingSystem": "Any",
+  "isAccessibleForFree": true,
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  }
+}
+</script>
+
+<link rel="icon" type="image/x-icon" href="images/favicon/favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="images/favicon/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="images/favicon/favicon-16x16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="images/favicon/apple-touch-icon.png">
+<link rel="manifest" href="images/favicon/site.webmanifest">
+<meta name="theme-color" content="#100b06">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="shell">
+
+  <!-- ===================== SIDEBAR: crest + cape nav ===================== -->
+  <aside class="side">
+    <div class="side-crest">
+      <img class="mark" src="images/logo.png" alt="Cape of Accomplishment Tracker crest">
+      <h1 class="side-title">Cape Tracker</h1>
+    </div>
+
+    <!-- PLAYER — dedicated preferences-style page: RSN sync + dashboard -->
+    <button class="side-nav-item" id="playerNavBtn">
+      <span class="side-nav-icon" aria-hidden="true">☺</span> <span id="playerNavLabel">Player</span>
+    </button>
+
+    <!-- JOURNEY — cross-cape planning page: timegated across every cape at
+         once, your pinned long-term grind, and a weekly themed pick. -->
+    <button class="side-nav-item" id="journeyNavBtn">
+      <span class="side-nav-icon" aria-hidden="true">🗺</span> Journey
+    </button>
+
+    <button class="nav-lbl nav-lbl-toggle" id="capeNavToggle">
+      <span>Choose a cape</span>
+      <span class="sec-chev" id="capeNavChev">▾</span>
+    </button>
+    <!-- Cape tabs render here (js/ui.js → renderCapeTabs) as vertical grouped nav -->
+    <div class="cape-tabs" id="capeTabs"></div>
+
+    <div class="side-spacer"></div>
+
+    <div class="side-help">
+      Bugs? Support? <a class="side-help-link" href="https://discord.gg/CezMm6xTNC" target="_blank" rel="noopener noreferrer">Join our Discord</a>
+    </div>
+  </aside>
+
+  <!-- ===================== MAIN COLUMN ===================== -->
+  <main class="main">
+
+    <!-- ===================== PLAYER PAGE (RSN sync + dashboard) ===================== -->
+    <div id="playerView" style="display:none;">
+      <div class="sync-panel">
+        <div class="sync-top">
+          <div class="sync-label-group">
+            <div class="sync-label">
+              <span class="lbl">Sync from RuneMetrics</span>
+            </div>
+            <div class="sync-meta">Auto-fills skill levels and quest completion across every cape</div>
+          </div>
+          <div class="sync-row">
+            <div class="sync-input-wrap">
+              <svg class="search-icon" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <circle cx="8.5" cy="8.5" r="6" stroke="currentColor" stroke-width="1.6"/>
+                <line x1="13" y1="13" x2="18" y2="18" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+              </svg>
+              <input class="sync-input" id="rsnInput" placeholder="RuneScape display name" autocomplete="off" />
+            </div>
+            <button class="sync-btn" id="syncBtn">Search player</button>
+          </div>
+        </div>
+        <div class="sync-status" id="syncStatus">
+          <span class="dot"></span>
+          <span id="syncStatusText">This calls the unofficial RuneMetrics profile endpoint through a same-origin Netlify Function, so it isn't subject to the CORS restrictions a direct browser request would hit. Hit Sync stats to try it. Either way, everything you enter (and every checkbox above) is already saved to your browser automatically.</span>
+        </div>
+      </div>
+
+      <!-- DASHBOARD — filled in by js/ui.js → renderPlayerDashboard() -->
+      <section id="playerDashboard" style="display:none;">
+        <div class="sec-head"><h2>Dashboard</h2><div class="note" id="playerDashNote"></div></div>
+        <div class="player-stats" id="playerStats"></div>
+        <div class="sec-head" style="margin-top:22px;"><h2><img class="sec-icon" src="https://runescape.wiki/images/Statistics.png" alt="" aria-hidden="true" />Skills</h2></div>
+        <div class="skills-grid" id="playerSkillsGrid"></div>
+      </section>
+      <div class="empty" id="playerDashEmpty">Search a RuneScape display name above to see your dashboard.</div>
+    </div>
+
+    <!-- ===================== JOURNEY PAGE (cross-cape planning) ===================== -->
+    <div id="journeyView" style="display:none;">
+
+      <!-- FOCUS — the one long-running background grind you're pointed at -->
+      <section id="journeyFocusSection">
+        <div class="sec-head"><h2>Current focus</h2><div class="note">Pin one skill or requirement to keep in view while you work on everything else</div></div>
+        <div class="panel-box" id="journeyFocusBox"></div>
+      </section>
+
+      <!-- WEEKLY PICK — one task, drawn from a theme you choose -->
+      <section id="journeyWeeklySection">
+        <div class="sec-head"><h2>This week's pick</h2><div class="note">Pick a theme, get one task, swap it whenever</div></div>
+        <div class="panel-box">
+          <div class="journey-weekly-controls">
+            <select id="journeyThemeSelect" class="sort-select">
+              <option value="">Choose a theme…</option>
+            </select>
+            <button id="journeyRerollBtn" class="sync-btn" type="button">🎲 Reroll</button>
+          </div>
+          <div id="journeyWeeklyPick"></div>
+        </div>
+      </section>
+
+      <!-- CROSS-CAPE TIMEGATED — every cape's not-yet-started timegated tasks in one list -->
+      <section id="journeyTimegatedSection">
+        <div class="sec-head"><h2>Time-gated, across every cape</h2><div class="note" id="journeyTimegatedNote"></div></div>
+        <div class="ach-list-full" id="journeyTimegatedList"></div>
+        <div class="empty" id="journeyTimegatedEmpty" style="display:none;">Nothing time-gated left unstarted — nice.</div>
+      </section>
+
+    </div>
+
+    <!-- ===================== CAPE PAGES (per-cape tracker) ===================== -->
+    <div id="capeView">
+
+    <!-- HERO — the cape details box -->
+    <div class="hero">
+      <div class="cape-medallion">
+        <svg class="cape-svg" id="capeSvg" viewBox="0 0 120 150" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="capeFill" x1="0" y1="1" x2="0" y2="0">
+              <stop offset="0%" stop-color="var(--gold)"/>
+              <stop offset="100%" stop-color="transparent"/>
+            </linearGradient>
+          </defs>
+          <path d="M60 8 C40 8 26 20 22 34 L14 132 L34 122 L44 138 L60 126 L76 138 L86 122 L106 132 L98 34 C94 20 80 8 60 8 Z"
+                fill="var(--bg-alt)" stroke="var(--violet-soft)" stroke-width="1.5"/>
+          <path id="capeProgress" d="M60 8 C40 8 26 20 22 34 L14 132 L34 122 L44 138 L60 126 L76 138 L86 122 L106 132 L98 34 C94 20 80 8 60 8 Z"
+                fill="url(#capeFill)" opacity="0.85"/>
+          <circle cx="60" cy="40" r="10" fill="none" stroke="var(--gold)" stroke-width="1" opacity="0.6"/>
+          <path d="M60 32 L63 38 L69 39 L64 43 L66 49 L60 45 L54 49 L56 43 L51 39 L57 38 Z" fill="var(--gold)" opacity="0.7"/>
+        </svg>
+        <img class="cape-img" id="capeImg" alt="" style="display:none;" />
+      </div>
+      <div class="hero-main">
+        <div class="hero-top-row">
+          <h1 id="heroTitle"></h1>
+          <div class="hero-stats">
+            <div class="hero-stat"><span class="num" id="statSkills">0/0</span><span class="lbl">Skills</span></div>
+            <div class="hero-stat" id="statAchWrap"><span class="num" id="statAch">0/0</span><span class="lbl">Reqs</span></div>
+            <div class="hero-stat hero-stat-pct"><span class="num" id="statPct">0%</span><span class="lbl">Overall</span></div>
+          </div>
+        </div>
+        <p class="sub" id="heroBlurb"></p>
+        <div class="prereqs" id="prereqs"></div>
+      </div>
+    </div>
+
+    <!-- TWO-COLUMN CONTENT: skills (left) + requirements (right) -->
+    <div class="content">
+
+      <!-- LEFT COLUMN: skills -->
+      <div class="col-skills">
+        <!-- SKILLS -->
+        <section id="skillsSection">
+          <div class="sec-head sec-head-toggle" id="skillsSecHead">
+            <h2><img class="sec-icon" src="https://runescape.wiki/images/Statistics.png" alt="" aria-hidden="true" />Skills</h2>
+            <span class="sec-chev" id="skillsChev">▾</span>
+          </div>
+          <div class="sec-body" id="skillsBody">
+            <div class="skills-grid" id="skillsGrid"></div>
+            <div id="skillsAccordion"></div>
+            <div id="skillsNote"></div>
+          </div>
+        </section>
+      </div>
+
+      <!-- RIGHT COLUMN: the longest & hardest requirements -->
+      <div class="col-reqs">
+        <section id="achSection">
+          <div class="sec-head sec-head-toggle" id="achSecHead">
+            <h2><img class="sec-icon" id="achHeadingIcon" src="" alt="" aria-hidden="true" /><span id="achHeadingText">The longest &amp; hardest requirements</span></h2>
+            <div class="note" id="achNote"></div>
+            <span class="sec-chev" id="achChev">▾</span>
+          </div>
+          <div class="sec-body" id="achBody">
+            <div class="filters" id="filters"></div>
+            <div class="controls-row">
+              <div class="search-wrap">
+                <svg class="search-icon" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                  <circle cx="8.5" cy="8.5" r="6" stroke="currentColor" stroke-width="1.6"/>
+                  <line x1="13" y1="13" x2="18" y2="18" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+                </svg>
+                <input class="search-box" id="searchBox" placeholder="Search requirements…" />
+              </div>
+              <select class="sort-select" id="sortSelect">
+                <option value="alpha">Alphabetical</option>
+                <option value="timeAsc">Quickest</option>
+                <option value="timeDesc">Longest</option>
+              </select>
+            </div>
+            <!-- TIME-GATED — own full-width, collapsible subsection instead of a filter chip, listed first since these should be started right away in the background while working through everything else. -->
+            <div class="subsection subsection-first" id="timegatedSection">
+              <div class="sec-head sec-head-toggle subsec-head" id="timegatedSecHead">
+                <h3>Time-gated</h3>
+                <span class="note" id="timegatedNote"></span>
+                <span class="sec-chev" id="timegatedChev">▾</span>
+              </div>
+              <div class="sec-body" id="timegatedBody">
+                <div class="ach-list-full" id="timegatedList"></div>
+              </div>
+            </div>
+
+            <div class="ach-list" id="achList" style="margin-top:14px;"></div>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <!-- CUSTOM TRACKER (full width) -->
+    <section>
+      <div class="sec-head">
+        <h2>Your own additions</h2>
+        <div class="note" id="customNote">Track anything not covered above, per cape</div>
+      </div>
+      <div class="panel-box">
+        <div class="custom-form">
+          <input id="customTitle" placeholder="Requirement name" />
+          <input id="customNoteInput" placeholder="Notes / requirement (optional)" />
+          <button id="customAdd">Add</button>
+        </div>
+        <div id="customList"></div>
+        <div class="empty" id="customEmpty"></div>
+      </div>
+    </section>
+
+    </div><!-- /#capeView -->
+
+    <footer>
+      Data stored privately in your browser's localStorage — nothing leaves your device except the optional RuneMetrics sync lookup, which is proxied through this site's own Netlify Function. Switch capes in the sidebar — each keeps its own progress. Source: the RuneScape Wiki.
+    </footer>
+  </main>
+</div>
+
+<script type="module" src="js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,728 @@
+:root{
+  --bg:#100b06;
+  --bg-alt:#170f08;
+  --panel:#231a10;
+  --panel-hi:#2e2213;
+  --line:#5a4423;
+  --line-dim:#3a2c17;
+  --line-bright:#8f6a30;
+  --gold:#c99a3f;
+  --gold-bright:#f0c869;
+  --violet:#7a5a2c;
+  --violet-soft:#b3862f;
+  --text:#ecdcb0;
+  --text-dim:#b3a074;
+  --text-faint:#8a7a58;
+  --rust:#8a3a26;
+  --rust-bright:#c1573b;
+  --done:#6b8a45;
+  --done-bright:#95b96a;
+  --started:#b3862f;
+  --radius:2px;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+html{color-scheme: dark;}
+body{
+  background:
+    radial-gradient(ellipse 900px 500px at 12% -8%, rgba(201,154,63,0.10) 0%, transparent 55%),
+    radial-gradient(ellipse 700px 500px at 100% 0%, rgba(140,60,30,0.08) 0%, transparent 50%),
+    repeating-linear-gradient(115deg, rgba(0,0,0,0.16) 0px, rgba(0,0,0,0.16) 1px, transparent 1px, transparent 3px),
+    linear-gradient(180deg, var(--bg-alt), var(--bg) 60%);
+  color:var(--text);
+  font-family:'EB Garamond', serif;
+  font-size:17px;
+  line-height:1.55;
+  min-height:100vh;
+}
+a{color:var(--gold-bright);}
+.wrap{max-width:1080px;margin:0 auto;padding:28px 20px 80px;}
+
+/* ---------- APP SHELL (sidebar + main) ---------- */
+.shell{display:flex; min-height:100vh; align-items:flex-start;}
+
+/* Full-height left sidebar: crest + cape nav */
+.side{
+  width:220px; flex-shrink:0; position:sticky; top:0; align-self:flex-start; height:100vh;
+  display:flex; flex-direction:column; padding:22px 15px;
+  background:linear-gradient(180deg, var(--panel-hi), var(--panel) 60%);
+  border-right:1px solid var(--line);
+  box-shadow:inset -1px 0 0 rgba(255,255,255,0.03), 4px 0 18px rgba(0,0,0,0.4);
+  overflow-y:auto;
+}
+.side-crest{text-align:center; margin-bottom:18px;}
+.side-crest .mark{width:100%; max-width:120px; height:auto; display:inline-block;}
+.side-title{
+  font-family:'Cinzel',serif; font-weight:700; font-size:0.82rem; margin:8px 0 0;
+  color:var(--gold-bright); text-transform:uppercase; letter-spacing:0.05em; line-height:1.35;
+}
+.nav-lbl{
+  font-family:'Cinzel',serif; font-size:0.6rem; text-transform:uppercase; letter-spacing:0.1em;
+  color:var(--text-faint); margin:4px 4px 9px;
+}
+.nav-lbl-toggle{
+  display:flex; align-items:center; justify-content:space-between; width:100%;
+  background:none; border:none; padding:0; cursor:pointer; font:inherit;
+}
+.nav-lbl-toggle:hover{color:var(--text-dim);}
+.nav-lbl-toggle .sec-chev{font-size:0.7rem;}
+
+/* PLAYER nav entry — sits above the cape list, its own top-level page rather
+   than one of the cape tabs (see activeView in ui.js). */
+.side-nav-item{
+  display:flex; align-items:center; gap:8px; width:100%; margin-bottom:16px;
+  background:var(--panel); border:1px solid var(--line); border-radius:var(--radius);
+  color:var(--text); font-family:'Cinzel',serif; font-size:0.72rem; font-weight:600;
+  text-transform:uppercase; letter-spacing:0.05em; padding:9px 12px; cursor:pointer;
+  transition:background .15s, border-color .15s, color .15s;
+}
+.side-nav-item:hover{border-color:var(--line-bright); color:var(--gold-bright);}
+.side-nav-item.active{
+  background:linear-gradient(90deg, rgba(201,154,63,0.16), rgba(201,154,63,0.03));
+  border-color:var(--line-bright); color:var(--gold-bright);
+}
+.side-nav-icon{font-size:0.95rem; line-height:1;}
+
+/* Collapsible cape list — .cape-tabs gets .collapsed toggled by capeNavToggle
+   (js/ui.js), same collapsed/chevron-rotate convention as .sec-body/.sec-chev
+   elsewhere in this file. */
+.cape-tabs.collapsed{display:none;}
+
+.side-spacer{flex:1; min-height:20px;}
+.side-help{
+  text-align:center; padding-top:14px; margin-top:4px;
+  font-size:0.75rem; color:var(--text-faint);
+}
+.side-help-link{color:var(--gold-bright); text-decoration:underline;}
+.side-help-link:hover{color:var(--gold);}
+
+/* Main column */
+.main{flex:1; min-width:0; max-width:1160px; margin:0 auto; padding:26px 30px 80px;}
+
+/* ---------- MASTHEAD (retained, no longer used in markup) ---------- */
+.masthead{text-align:center; margin-bottom:26px;}
+.masthead h1{
+  font-family:'Cinzel', serif; font-weight:700; font-size:1.85rem; margin:0;
+  color:var(--gold-bright); text-transform:uppercase; letter-spacing:0.03em;
+  text-shadow:0 2px 0 rgba(0,0,0,0.6);
+}
+.masthead .tagline{
+  font-family:'EB Garamond', serif; font-style:italic; color:var(--text-dim);
+  font-size:0.95rem; margin-top:4px;
+}
+.masthead .rule{
+  width:220px; height:1px; margin:14px auto 0;
+  background:linear-gradient(90deg, transparent, var(--line-bright), transparent);
+  position:relative;
+}
+.masthead .rule::after{
+  content:'❖'; position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
+  color:var(--gold); background:var(--bg); padding:0 10px; font-size:0.7rem;
+}
+
+/* ---------- CAPE TABS + OVERVIEW ---------- */
+/* ---------- PLAYER SYNC ---------- */
+/* Slim header bar at the top of the page — label/meta on the left, a
+   right-aligned, content-width (not full-width) search box on the right. */
+.sync-panel{
+  position:relative;
+  background:linear-gradient(160deg, var(--panel-hi), var(--panel) 80%);
+  border:1px solid var(--line);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,0.03), inset 0 1px 0 rgba(255,255,255,0.04), 0 6px 16px rgba(0,0,0,0.45);
+  border-radius:var(--radius);
+  padding:10px 18px;
+  margin-bottom:18px;
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+}
+.sync-panel::before,.sync-panel::after{
+  content:''; position:absolute; width:9px; height:9px; border:1px solid var(--line-bright); opacity:0.75;
+}
+.sync-panel::before{top:-1px; left:-1px; border-right:none; border-bottom:none;}
+.sync-panel::after{top:-1px; right:-1px; border-left:none; border-bottom:none;}
+.sync-top{display:flex; align-items:center; justify-content:space-between; gap:16px; flex-wrap:wrap;}
+.sync-label-group{display:flex; flex-direction:column; gap:1px; min-width:0;}
+.sync-label{display:flex; align-items:center; gap:8px;}
+.sync-label .lbl{
+  font-family:'Cinzel', serif; font-size:0.78rem; color:var(--gold-bright); letter-spacing:0.06em;
+  text-transform:uppercase;
+}
+.api-badge{
+  font-size:0.65rem; text-transform:uppercase; letter-spacing:0.06em; padding:2px 9px; border-radius:var(--radius);
+  border:1px solid var(--rust); color:#d38a6f; white-space:nowrap;
+}
+.api-badge.ready{border-color:var(--done); color:var(--done-bright);}
+.sync-row{display:flex; gap:10px; flex-wrap:wrap; flex-shrink:0;}
+.sync-input-wrap{position:relative;}
+.sync-input-wrap .search-icon{
+  position:absolute; inset-inline-start:12px; top:50%; transform:translateY(-50%);
+  width:14px; height:14px; color:var(--text-dim); pointer-events:none;
+}
+.sync-input{
+  width:200px; background:var(--bg-alt); border:1px solid var(--line); color:var(--text);
+  border-radius:var(--radius); padding-block:7px; padding-inline:34px 12px; font-size:0.9rem; font-family:'EB Garamond',serif;
+}
+.sync-input:focus{outline:none; border-color:var(--gold);}
+.sync-input::placeholder{color:var(--text-faint);}
+.sync-btn{
+  background:linear-gradient(180deg, #7a5a2c, #5c4320); color:var(--gold-bright);
+  border:1px solid var(--line-bright); border-radius:var(--radius);
+  padding:7px 16px; font-weight:600; cursor:pointer; font-size:0.75rem;
+  font-family:'Cinzel', serif; text-transform:uppercase; letter-spacing:0.07em; white-space:nowrap;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,0.08), 0 2px 4px rgba(0,0,0,0.4);
+}
+.sync-btn:hover{background:linear-gradient(180deg, #8f6a30, #6b4f26);}
+.sync-btn:disabled{opacity:0.6; cursor:not-allowed;}
+.sync-btn.loading{opacity:0.75;}
+.sync-status{font-size:0.78rem; color:var(--text-dim); display:flex; align-items:flex-start; gap:6px; line-height:1.45;}
+.sync-status .dot{width:7px; height:7px; border-radius:50%; margin-top:5px; flex-shrink:0; background:var(--rust-bright);}
+.sync-status.ok .dot{background:var(--done-bright);}
+.sync-meta{font-size:0.72rem; color:var(--text-dim); font-style:italic; opacity:0.85;}
+
+/* Vertical cape nav in the sidebar. Each group (Quest|MQC, Max|Master Max,
+   Comp|Trim Comp) is a bordered block with its base cape and harder sibling
+   stacked as two full-width rows. */
+.cape-tabs{display:flex; flex-direction:column; gap:9px;}
+.cape-tab-group{
+  display:flex; flex-direction:column; background:var(--panel); border:1px solid var(--line);
+  border-radius:var(--radius); overflow:hidden; box-shadow:0 2px 6px rgba(0,0,0,0.35); min-width:0;
+}
+.cape-tab-seg{
+  background:transparent; border:none; border-top:1px solid var(--line-dim); color:var(--text-dim);
+  padding:9px 11px; font-size:0.68rem; cursor:pointer; text-transform:uppercase; letter-spacing:0.02em;
+  font-family:'Cinzel', serif; display:flex; align-items:center; justify-content:space-between; gap:8px;
+  position:relative; width:100%; text-align:start;
+}
+.cape-tab-seg:first-child{border-top:none;}
+.cape-tab-seg .pct{font-family:'EB Garamond', serif; font-size:0.74rem; color:var(--text-faint); font-style:italic; flex-shrink:0;}
+.cape-tab-seg:hover{background:rgba(201,154,63,0.06); color:var(--text);}
+.cape-tab-seg.active{background:linear-gradient(90deg, rgba(201,154,63,0.16), rgba(201,154,63,0.03)); color:var(--gold-bright);}
+.cape-tab-seg.active::after{content:''; position:absolute; left:0; top:5px; bottom:5px; width:2px; background:var(--gold);}
+.cape-tab-seg.active .pct{color:var(--gold-bright);}
+/* Fully completed cape — small glowing star + a soft gold glow across the
+   whole row, same gold accent language as .skill-tile.met, so "done" reads
+   consistently everywhere in the app. Layered with (not replacing) .active,
+   since the currently-viewed tab can also be a completed one. */
+.cape-tab-seg.achieved{color:var(--gold-bright); box-shadow:inset 0 0 10px rgba(201,154,63,0.25);}
+.cape-tab-seg.achieved .pct{color:var(--gold-bright);}
+.cape-tab-star{color:var(--gold-bright); text-shadow:0 0 6px rgba(201,154,63,0.9), 0 0 12px rgba(201,154,63,0.5);}
+
+/* ---------- HERO ---------- */
+/* Compacted deliberately — this box used to run a 150px medallion column,
+   a 1.7rem title, an always-visible blurb, and a separately-bordered
+   3-cell stat strip with its own top padding, easily 220px+ tall before a
+   single achievement was on screen. Every element below keeps its original
+   #id (renderHero in ui.js never changes) — only the layout/sizing changed,
+   folding the stats into the title row and shrinking the medallion so the
+   achievement list gets the vertical space instead. */
+.hero{
+  position:relative;
+  display:grid;
+  grid-template-columns:auto 1fr;
+  gap:16px;
+  align-items:center;
+  background:
+    radial-gradient(circle at 10px 10px, rgba(201,154,63,0.07) 1px, transparent 1.4px),
+    linear-gradient(160deg, var(--panel-hi), var(--panel) 70%);
+  background-size:22px 22px, 100% 100%;
+  border:1px solid var(--line);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,0.03), inset 0 1px 0 rgba(255,255,255,0.04), 0 6px 16px rgba(0,0,0,0.45);
+  border-radius:var(--radius);
+  padding:12px 18px;
+  overflow:hidden;
+}
+.hero::before,.hero::after{
+  content:''; position:absolute; width:9px; height:9px; border:1px solid var(--line-bright); opacity:0.75; z-index:1;
+}
+.hero::before{top:-1px; left:-1px; border-right:none; border-bottom:none;}
+.hero::after{top:-1px; right:-1px; border-left:none; border-bottom:none;}
+.cape-medallion{
+  width:52px; display:flex; align-items:center; justify-content:center; flex-shrink:0;
+}
+.cape-svg{width:48px;height:60px;filter:drop-shadow(0 4px 8px rgba(0,0,0,0.6));}
+.cape-img{width:48px;max-height:64px;object-fit:contain;filter:drop-shadow(0 4px 8px rgba(0,0,0,0.6));}
+.hero-main{min-width:0;}
+.hero-top-row{display:flex; align-items:baseline; justify-content:space-between; gap:14px; flex-wrap:wrap;}
+.hero h1{
+  font-family:'Cinzel', serif;
+  font-weight:700;
+  font-size:1.15rem;
+  margin:0;
+  letter-spacing:0.02em;
+  text-transform:uppercase;
+  color:var(--gold-bright);
+}
+.hero p.sub{color:var(--text-dim); margin:4px 0 0; max-width:64ch; font-size:0.82rem;}
+.prereqs{display:flex; gap:6px; flex-wrap:wrap; margin-top:6px;}
+.prereq-badge{
+  font-size:0.7rem; padding:2px 8px; border:1px solid var(--line); color:var(--text-dim);
+  display:flex; align-items:center; gap:5px; font-style:italic;
+  clip-path:polygon(6px 0,100% 0,100% 100%,0 100%,0 6px);
+}
+.prereq-badge.met{border-color:var(--done); color:var(--done-bright);}
+/* Stats folded inline next to the title instead of their own bordered,
+   padded row underneath — a row of small labeled numbers, not a strip. */
+.hero-stats{display:flex; gap:14px; flex-shrink:0;}
+.hero-stat{display:flex; align-items:baseline; gap:5px; white-space:nowrap;}
+.hero-stat .num{font-family:'Cinzel', serif; font-size:0.95rem; color:var(--gold-bright); font-weight:600;}
+.hero-stat .lbl{font-size:0.64rem; text-transform:uppercase; letter-spacing:0.05em; color:var(--text-faint);}
+.hero-stat-pct .num{font-size:1.05rem;}
+
+/* ---------- PLAYER DASHBOARD ---------- */
+.player-stats{
+  display:grid; grid-template-columns:repeat(5, 1fr); gap:1px;
+  background:var(--line); border:1px solid var(--line); border-radius:var(--radius);
+  overflow:hidden;
+}
+.player-stat{background:var(--panel); text-align:center; padding:16px 8px;}
+.player-stat .num{font-family:'Cinzel', serif; font-size:1.4rem; color:var(--gold-bright); font-weight:600;}
+.player-stat .lbl{font-size:0.68rem; text-transform:uppercase; letter-spacing:0.06em; color:var(--text-faint); margin-top:4px;}
+
+/* ---------- SECTION HEADERS ---------- */
+section{margin-top:40px;}
+.sec-head{display:flex; align-items:baseline; gap:14px; margin-bottom:14px; flex-wrap:wrap;}
+.sec-head h2{
+  font-family:'Cinzel', serif;
+  font-size:1.05rem;
+  margin:0;
+  color:var(--gold-bright);
+  text-transform:uppercase;
+  letter-spacing:0.05em;
+  white-space:nowrap;
+  display:flex; align-items:center; gap:10px;
+}
+.sec-icon{width:18px; height:18px; object-fit:contain; flex-shrink:0;}
+.sec-head::after{content:''; flex:1; height:1px; background:linear-gradient(90deg, var(--line-bright), transparent); align-self:center; order:2;}
+.sec-head h2{order:1;}
+.sec-head .note{color:var(--text-faint); font-size:0.8rem; font-style:italic; order:3; white-space:nowrap;}
+.sec-head-toggle{cursor:pointer; user-select:none;}
+.sec-head-toggle:hover h2{color:var(--gold);}
+.sec-chev{
+  font-size:0.85rem; color:var(--text-dim); transition:transform .2s ease;
+  flex-shrink:0; align-self:center; order:4;
+}
+.sec-chev.collapsed{transform:rotate(-90deg);}
+.sec-body.collapsed{display:none;}
+
+/* Time-gated subsection — a smaller nested heading reusing the same
+   collapse/chevron mechanics as the main section headers above. Default
+   spacing assumes it follows the main grid; .subsection-first (it now
+   leads the requirements list instead) gives it its own breathing room
+   below the search/sort controls row instead of that rule's full margin. */
+.subsec-head{margin-top:22px;}
+.subsection-first .subsec-head{margin-top:0;}
+.subsection-first{margin-top:20px; margin-bottom:18px; padding-bottom:14px; border-bottom:1px dashed var(--line-dim);}
+.subsec-head h3{
+  font-family:'Cinzel', serif;
+  font-size:0.85rem;
+  margin:0;
+  color:var(--gold-bright);
+  text-transform:uppercase;
+  letter-spacing:0.05em;
+  white-space:nowrap;
+  display:flex; align-items:center; gap:8px;
+  order:1;
+}
+.sec-head-toggle:hover h3{color:var(--gold);}
+/* Time-gated tasks run in the background rather than competing for active
+   play time, so they get their own full-width single-column list instead
+   of sharing the 2-up card grid above. */
+.ach-list-full{display:grid; grid-template-columns:1fr; gap:10px;}
+
+/* ---------- TWO-COLUMN CONTENT (skills left, requirements right) ---------- */
+.content{display:grid; grid-template-columns:300px minmax(0, 1fr); gap:28px; align-items:start; margin-top:34px;}
+.content > .col-skills, .content > .col-reqs{min-width:0;}
+.content section{margin-top:0;}
+/* Gap (not margin-top on "section + section") so spacing collapses cleanly
+   when a section is display:none — e.g. Skills is hidden for capes with no
+   tracked skills (Trimmed Completionist etc.), and a sibling-margin rule
+   would still fire since it only cares about DOM adjacency, not visibility,
+   leaving Tips pushed down and misaligned with the Achievements column.
+   Also tracks the page as you scroll the longer requirements list. */
+.col-skills{display:flex; flex-direction:column; gap:30px; position:sticky; top:20px;}
+@media(max-width:960px){
+  .content{grid-template-columns:1fr; gap:0;}
+  .content .col-skills{position:static;}
+  .content .col-reqs{margin-top:34px;}
+}
+
+/* ---------- SKILLS ----------
+   Read-only tiles mirroring the in-game skills tab: icon, current level,
+   and a corner badge (target level, or a gold star once met). No inputs —
+   levels only ever change via a RuneMetrics sync (main.js). */
+.skills-grid{
+  display:grid;
+  /* minmax(0,1fr) keeps the tracks from being forced wider than the column by
+     a long skill name (e.g. "All skills (except Invention)") — without it the
+     grid blows past its container and overlaps the requirements column. */
+  grid-template-columns:repeat(3, minmax(0, 1fr));
+  gap:10px;
+  max-width:420px;
+}
+.skill-icon{width:20px; height:20px; object-fit:contain; flex-shrink:0; vertical-align:middle;}
+.skill-tag{
+  font-size:0.66rem; text-transform:uppercase; letter-spacing:0.05em; color:var(--violet-soft);
+  border:1px solid var(--violet); padding-block:2px; padding-inline:7px;
+  clip-path:polygon(5px 0,100% 0,100% 100%,0 100%,0 5px);
+  margin-inline-start:auto; flex-shrink:0; white-space:nowrap;
+}
+.skill-tile{
+  position:relative;
+  background:linear-gradient(160deg, var(--panel-hi), var(--panel) 85%);
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,0.03);
+  padding:10px 6px 8px;
+  text-align:center;
+}
+.skill-tile.met{
+  border-color:var(--gold);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,0.03), 0 0 8px rgba(201,154,63,0.25);
+}
+.skill-tile-icon{display:flex; align-items:center; justify-content:center; height:34px;}
+.skill-tile-icon .skill-icon{width:32px; height:32px;}
+.skill-tile-level{
+  font-family:'Cinzel',serif; font-weight:700; font-size:0.85rem; color:var(--gold-bright);
+  margin-top:3px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.skill-tile-level .req{font-weight:400; color:var(--text-faint);}
+.skill-tile-name{
+  font-size:0.6rem; text-transform:uppercase; letter-spacing:0.03em; color:var(--text-dim); margin-top:2px;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+
+.skills-note{
+  margin-top:14px; position:relative; padding:10px 14px 10px 30px;
+  background:var(--panel); border:1px solid var(--line); border-radius:var(--radius);
+  color:var(--text-dim); font-size:0.85rem;
+}
+.skills-note::before{content:'❖'; position:absolute; left:10px; top:11px; color:var(--gold); font-size:0.7rem;}
+.skills-note a{color:var(--gold-bright);}
+.skills-accordion{margin-top:14px; border:1px dashed var(--line); border-radius:var(--radius); overflow:hidden;}
+.skills-accordion-toggle{
+  width:100%; display:flex; align-items:center; justify-content:space-between; gap:10px;
+  background:var(--bg-alt); border:none; color:var(--text-dim); padding:11px 16px; cursor:pointer;
+  font-family:'EB Garamond',serif; font-size:0.88rem; font-style:italic; text-align:start;
+}
+.skills-accordion-toggle .chev{transition:transform .2s; font-size:0.75rem; font-style:normal;}
+.skills-accordion-toggle.open .chev{transform:rotate(90deg);}
+.skills-accordion-body{display:none; padding:14px 16px; flex-wrap:wrap; gap:8px;}
+.skills-accordion-body.open{display:flex;}
+.skills-accordion-body.skills-tile-grid.open{
+  display:grid; grid-template-columns:repeat(3, minmax(0, 1fr)); max-width:420px;
+}
+
+/* ---------- FILTERS ---------- */
+.filters{display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px;}
+.filters button{
+  background:var(--panel); border:1px solid var(--line); color:var(--text-dim);
+  padding:6px 13px; border-radius:var(--radius); font-size:0.72rem; cursor:pointer;
+  font-family:'Cinzel', serif; text-transform:uppercase; letter-spacing:0.05em;
+}
+.filters button:hover{color:var(--text); border-color:var(--line-bright);}
+.filters button.active{background:rgba(201,154,63,0.14); border-color:var(--gold); color:var(--gold-bright);}
+
+.controls-row{display:flex; gap:10px; flex-wrap:wrap; align-items:center;}
+.search-wrap{position:relative; flex:1; min-width:180px;}
+.search-icon{
+  position:absolute; inset-inline-start:12px; top:50%; transform:translateY(-50%);
+  width:14px; height:14px; color:var(--text-dim); pointer-events:none;
+}
+.search-box{
+  width:100%; background:var(--bg-alt); border:1px solid var(--line); border-radius:var(--radius);
+  padding-block:9px; padding-inline:34px 14px; color:var(--text); font-size:0.9rem; font-family:'EB Garamond',serif;
+}
+.search-box:focus{outline:none; border-color:var(--gold);}
+.sort-select{
+  appearance:none; -webkit-appearance:none; -moz-appearance:none;
+  background:var(--bg-alt) url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='none'><path d='M6 8l4 4 4-4' stroke='%23b3a074' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/></svg>") no-repeat right 12px center;
+  background-size:14px;
+  border:1px solid var(--line); border-radius:var(--radius);
+  padding:9px 34px 9px 14px; color:var(--text-dim); font-size:0.82rem; font-family:'EB Garamond',serif;
+  cursor:pointer; color-scheme: dark; transition:border-color .15s, color .15s;
+}
+.sort-select:hover{border-color:var(--line-bright); color:var(--text);}
+.sort-select:focus{outline:none; border-color:var(--gold); color:var(--text);}
+.sort-select option{background:var(--panel); color:var(--text);}
+
+/* ---------- QUEST CAPE: Quests / Miniquests / Sagas sections ---------- */
+.quest-type-section:last-child{margin-bottom:0;}
+.quest-type-heading{
+  font-family:'Cinzel', serif;
+  font-size:0.98rem;
+  margin:0 0 10px;
+  color:var(--gold-bright);
+  text-transform:uppercase; letter-spacing:0.04em;
+  display:flex; align-items:center; gap:10px;
+}
+
+.quest-compact-grid{grid-template-columns:repeat(4, minmax(0, 1fr)); gap:8px;}
+.quest-compact{
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  padding:10px 12px;
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+  opacity:0.6;
+}
+.quest-compact-title{
+  font-weight:600; font-size:0.85rem;
+  overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+  text-decoration:line-through; text-decoration-color:var(--text-faint);
+}
+.quest-compact .ach-meta{margin:0;}
+
+/* ---------- ACHIEVEMENT CARDS ---------- */
+.ach-list{display:grid; grid-template-columns:repeat(auto-fill, minmax(270px, 1fr)); gap:10px; align-items:stretch;}
+.ach-list .skills-accordion{grid-column:1/-1;}
+.ach-card{
+  background:linear-gradient(160deg, var(--panel-hi), var(--panel) 90%);
+  border:1px solid var(--line);
+  border-inline-start:3px solid var(--line-dim);
+  border-radius:var(--radius);
+  padding:14px 16px;
+  display:grid;
+  grid-template-columns:30px 1fr;
+  gap:12px;
+  align-items:start;
+  min-height:150px;
+  transition:opacity .2s, border-color .2s;
+}
+.ach-card.done{opacity:0.55; border-inline-start-color:var(--done);}
+.ach-card.done .ach-title{text-decoration:line-through; text-decoration-color:var(--text-faint);}
+/* Middle column stretches to the card's full height (the card itself is
+   stretched to match its row-mate by .ach-list above) so the tags + wiki
+   link pair can be pinned to the bottom via margin-top:auto regardless of
+   how much req/tip text sits above it — same idea used for the sticky
+   "Remove" button etc. */
+.ach-body{display:flex; flex-direction:column; align-self:stretch; min-height:0;}
+.ach-title-clickable{cursor:pointer;}
+.ach-title-clickable:hover{color:var(--gold-bright);}
+.ach-check{
+  width:22px; height:22px; border-radius:50%; border:2px solid var(--violet);
+  background:var(--bg-alt); cursor:pointer; margin-top:2px;
+  display:flex; align-items:center; justify-content:center; color:var(--gold-bright);
+  font-size:0.75rem; box-shadow:inset 0 1px 3px rgba(0,0,0,0.6);
+}
+.ach-card.done .ach-check{
+  background:radial-gradient(circle at 35% 30%, var(--done-bright), var(--done) 70%);
+  border-color:var(--done-bright); color:#1a2410;
+}
+/* Achievements driven by a linked quest's own RuneMetrics sync (see
+   data.js's linkedQuest / ui.js's achCardEl) — not independently clickable,
+   so the check button loses its pointer affordance and hover highlight. */
+.ach-card.locked .ach-check{cursor:default;}
+.ach-card.locked .ach-title{cursor:default;}
+.status-dot{
+  width:22px; height:22px; margin-top:2px; flex-shrink:0;
+  display:flex; align-items:center; justify-content:center;
+}
+.status-dot::before{content:""; width:11px; height:11px; border-radius:50%; display:block;}
+.status-dot.completed::before{background:var(--done-bright);}
+.status-dot.started::before{background:var(--started);}
+.status-dot.not-started::before{background:var(--rust-bright);}
+.members-icon{width:22px; height:22px; object-fit:contain; vertical-align:-6px;}
+.ach-title{font-family:'Cinzel',serif; font-weight:600; font-size:0.95rem; margin-bottom:4px; color:var(--text);}
+.ach-req{color:var(--text-dim); font-size:0.9rem; margin-bottom:6px; font-style:italic;}
+.ach-tip{color:var(--violet-soft); font-size:0.82rem; border-inline-start:2px solid var(--violet); padding-inline-start:8px; margin-top:6px;}
+/* Title sits level with the checkbox (its grid row-mate) and the time
+   estimate, all on one line — the time is pushed to the far edge via
+   margin-inline-start:auto on .ach-time within this row. */
+.ach-top-row{display:flex; align-items:baseline; gap:10px; margin-bottom:4px;}
+.ach-top-row .ach-title{margin-bottom:0;}
+.ach-time{font-family:'Cinzel',serif; font-size:0.72rem; color:var(--gold-bright); white-space:nowrap; margin-inline-start:auto;}
+/* Tags sit just above the wiki link, both pinned to the card's bottom via
+   margin-top:auto regardless of how much req/tip text sits above them. */
+.ach-bottom-row{margin-top:auto; padding-top:8px; display:flex; flex-direction:column; gap:6px;}
+.ach-meta{display:flex; align-items:center; flex-wrap:wrap; gap:6px 10px; margin-bottom:6px;}
+.ach-tags{display:flex; gap:4px; flex-wrap:wrap;}
+.pill{
+  font-size:0.62rem; text-transform:uppercase; letter-spacing:0.05em; padding:2px 8px;
+  border:1px solid var(--line-bright); color:var(--text-dim);
+  clip-path:polygon(5px 0,100% 0,100% 100%,0 100%,0 5px);
+  display:inline-flex; align-items:center; gap:3px;
+}
+.pill-icon{width:11px; height:11px; object-fit:contain;}
+.pill.RNG{border-color:var(--rust-bright); color:#d38a6f;}
+.pill.Timegated{border-color:var(--gold); color:var(--gold-bright);}
+.pill.Archaeology{border-color:#7a6aa8; color:#a596cf;}
+.pill.PvM{border-color:#5f7a8a; color:#8fb4d1;}
+.pill.type-quest{border-color:#7a6aa8; color:#a596cf;}
+.pill.type-miniquest{border-color:var(--gold); color:var(--gold-bright);}
+.pill.type-saga{border-color:#5f7a8a; color:#8fb4d1;}
+.wiki-link{font-size:0.78rem; color:var(--gold-bright); text-decoration:none; font-style:italic;}
+.wiki-link:hover{text-decoration:underline;}
+.ach-actions{display:flex; align-items:center; gap:10px;}
+.ach-pin-btn{
+  background:none; border:1px solid var(--line); color:var(--text-faint);
+  font-size:0.85rem; line-height:1; padding:3px 7px; border-radius:3px; cursor:pointer;
+}
+.ach-pin-btn:hover{border-color:var(--gold); color:var(--gold-bright);}
+.ach-pin-btn.pinned{border-color:var(--gold); color:var(--gold-bright); background:rgba(201,154,63,0.12);}
+
+/* ---------- CUSTOM / NOTES / STUBS ---------- */
+.panel-box{
+  position:relative;
+  background:linear-gradient(160deg, var(--panel-hi), var(--panel) 85%);
+  border:1px solid var(--line); border-radius:var(--radius); padding:18px 20px;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,0.03), 0 4px 10px rgba(0,0,0,0.4);
+}
+.panel-box::before,.panel-box::after{
+  content:''; position:absolute; width:9px; height:9px; border:1px solid var(--line-bright); opacity:0.75;
+}
+.panel-box::before{top:-1px; left:-1px; border-right:none; border-bottom:none;}
+.panel-box::after{top:-1px; right:-1px; border-left:none; border-bottom:none;}
+.custom-form{display:flex; gap:8px; flex-wrap:wrap; margin-bottom:14px;}
+.custom-form input{
+  flex:1; min-width:160px; background:var(--bg-alt); border:1px solid var(--line); color:var(--text);
+  border-radius:var(--radius); padding:9px 11px; font-size:0.9rem; font-family:'EB Garamond',serif;
+}
+.custom-form input:focus{outline:none; border-color:var(--gold);}
+.custom-form button{
+  background:linear-gradient(180deg, #7a5a2c, #5c4320); color:var(--gold-bright); border:1px solid var(--line-bright);
+  border-radius:var(--radius); padding:9px 18px;
+  font-weight:600; cursor:pointer; font-size:0.78rem; font-family:'Cinzel',serif; text-transform:uppercase; letter-spacing:0.06em;
+}
+.custom-item{
+  display:flex; align-items:center; gap:10px; padding:8px 4px; border-bottom:1px solid var(--line); font-size:0.92rem;
+}
+.custom-item:last-child{border-bottom:none;}
+.custom-item.done{opacity:0.5; text-decoration:line-through;}
+.custom-item button.del{
+  margin-inline-start:auto; background:none; border:none; color:var(--rust-bright); cursor:pointer; font-size:0.85rem; font-style:italic;
+}
+.empty{color:var(--text-faint); font-size:0.88rem; font-style:italic; padding:10px 0;}
+
+/* ---------------- QUEST ELIGIBILITY ---------------- */
+/* Verdict badge sitting inline after a quest title. Colour language matches
+   the status dots: green = doable now, amber = skill-blocked, red = quest-locked. */
+.elig-badge{
+  display:inline-block; margin-inline-end:6px; padding:1px 7px;
+  border:1px solid var(--line); border-radius:var(--radius);
+  font-size:0.68rem; font-weight:600; letter-spacing:0.02em;
+  text-transform:uppercase; vertical-align:middle; white-space:nowrap;
+}
+.elig-badge.can{border-color:var(--done); color:var(--done-bright); background:rgba(107,138,69,0.14);}
+.elig-badge.skills{border-color:var(--started); color:var(--gold-bright); background:rgba(179,134,47,0.12);}
+.elig-badge.quests,
+.elig-badge.both{border-color:var(--rust-bright); color:#d38a6f; background:rgba(138,58,38,0.14);}
+.elig-badge.unknown{border-color:var(--line-dim); color:var(--text-faint);}
+/* Matches the existing violet used for quest-type pills (.pill.type-quest)
+   elsewhere — --violet-soft is a misleadingly-named gold tone, not this. */
+.elig-badge.unblocks{border-color:#7a6aa8; color:#a596cf; background:rgba(122,106,168,0.14); text-transform:none;}
+
+/* The specific shortfalls under a blocked quest. */
+.elig-missing{display:flex; flex-wrap:wrap; gap:5px; margin:2px 0 7px;}
+.miss-skill, .miss-quest{
+  font-size:0.74rem; padding:1px 6px; border-radius:var(--radius);
+  border:1px solid var(--line-dim); color:var(--text-dim); background:var(--bg-alt);
+}
+.miss-skill .have{color:var(--text-faint); font-style:italic; margin-inline-start:3px;}
+.miss-quest{border-color:var(--rust); color:#c1876f;}
+
+/* Full skill-requirement list, collapsed into an accordion so the card stays
+   compact. Met requirements get a green border; unmet keep the neutral look. */
+.req-accordion{margin:3px 0 8px;}
+.req-accordion summary{
+  cursor:pointer; list-style:none; display:inline-flex; align-items:center; gap:6px;
+  font-size:0.78rem; color:var(--text-dim); padding:2px 0; user-select:none;
+}
+.req-accordion summary::-webkit-details-marker{display:none;}
+.req-accordion summary::before{content:'▸'; color:var(--text-faint); font-size:0.7rem; transition:transform .12s ease;}
+.req-accordion[open] summary::before{transform:rotate(90deg);}
+.req-accordion summary:hover{color:var(--text);}
+.req-skill-grid{display:flex; flex-wrap:wrap; gap:5px; margin-top:6px;}
+.req-skill{
+  font-size:0.74rem; padding:1px 6px; border-radius:var(--radius);
+  border:1px solid var(--line-dim); color:var(--text-dim); background:var(--bg-alt);
+}
+.req-skill.met{border-color:var(--done); color:var(--done-bright);}
+.req-skill .have{color:var(--text-faint); font-style:italic; margin-inline-start:3px;}
+.req-skill.met .have{color:var(--done);}
+
+/* A faint left accent so the list scans by verdict without reading each badge. */
+.ach-card.elig-can{border-inline-start:2px solid var(--done);}
+.ach-card.elig-skills{border-inline-start:2px solid var(--started);}
+.ach-card.elig-quests, .ach-card.elig-both{border-inline-start:2px solid var(--rust);}
+
+.stub-banner{
+  border:1px dashed var(--line); border-radius:var(--radius); padding:16px 18px; color:var(--text-dim);
+  font-size:0.9rem; background:var(--bg-alt); font-style:italic;
+}
+.stub-banner b{color:var(--gold-bright); font-style:normal;}
+
+footer{margin-top:56px; text-align:center; color:var(--text-faint); font-size:0.8rem; font-style:italic; border-top:1px solid var(--line-dim); padding-top:18px;}
+footer a{color:var(--text-dim);}
+
+/* Collapse the sidebar above the main column on tablets & phones. Portrait
+   tablets (~768–820px) get the full-width stacked layout rather than a
+   cramped fixed sidebar beside a narrow column. */
+@media(max-width:820px){
+  .shell{flex-direction:column;}
+  .side{
+    position:static; height:auto; width:100%;
+    flex-direction:column; padding:18px 18px 16px;
+    border-right:none; border-bottom:1px solid var(--line);
+    box-shadow:0 4px 18px rgba(0,0,0,0.4);
+  }
+  .side-crest{margin-bottom:14px;}
+  .side-spacer{display:none;}
+  .nav-lbl{text-align:center;}
+  .nav-lbl-toggle{justify-content:center; gap:8px;}
+  .player-stats{grid-template-columns:repeat(3, 1fr);}
+  /* Cape groups flow side by side as horizontal cards when stacked on top. */
+  .cape-tabs{flex-direction:row; flex-wrap:wrap; justify-content:center;}
+  .cape-tab-group{flex:1 1 200px; max-width:320px;}
+  .main{padding:22px 20px 70px;}
+}
+
+@media(max-width:640px){
+  .sync-top{justify-content:center; text-align:center;}
+  .sync-row{width:100%;}
+  .sync-input-wrap{flex:1;}
+  .sync-input{width:100%;}
+  .hero{grid-template-columns:auto 1fr;}
+  .hero-top-row{justify-content:flex-start;}
+  .hero-stats{flex-wrap:wrap; gap:4px 14px;}
+  .prereqs{justify-content:flex-start;}
+  .ach-card{grid-template-columns:26px 1fr;}
+  .ach-list{grid-template-columns:1fr;}
+  .quest-compact-grid{grid-template-columns:repeat(2, minmax(0, 1fr));}
+  .player-stats{grid-template-columns:repeat(2, 1fr);}
+}
+
+/* ---------- JOURNEY (cross-cape planning page) ---------- */
+.journey-pin-forms{display:flex; align-items:center; gap:16px;}
+.journey-pin-form{flex:1; min-width:0;}
+.journey-pin-form-title{font-size:0.78rem; text-transform:uppercase; letter-spacing:0.05em; color:var(--text-faint); margin-bottom:8px;}
+.journey-pin-form-row{display:flex; align-items:center; gap:8px; flex-wrap:wrap;}
+.journey-pin-form-row select, .journey-pin-form-row input{
+  background:var(--bg-alt); border:1px solid var(--line); color:var(--text); border-radius:4px; padding:6px 8px; font-size:0.85rem;
+}
+.journey-pin-form-row input[type="number"]{width:64px;}
+.journey-pin-hint{color:var(--text-faint); font-size:0.78rem; font-style:italic; margin-top:12px;}
+
+.journey-pin-card{
+  position:relative; border:1px solid var(--line); border-radius:var(--radius); padding:14px 16px;
+  background:linear-gradient(160deg, var(--panel-hi), var(--panel) 85%);
+}
+.journey-pin-card.done{border-color:var(--done); opacity:0.85;}
+.journey-pin-top{display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:10px;}
+.journey-pin-title{font-family:'Cinzel', serif; color:var(--gold-bright); font-size:1rem;}
+.journey-unpin{
+  background:none; border:1px solid var(--line); color:var(--text-faint); font-size:0.72rem;
+  padding:3px 10px; border-radius:3px; cursor:pointer;
+}
+.journey-unpin:hover{border-color:var(--line-bright); color:var(--text-dim);}
+.journey-pin-progress{height:8px; border-radius:4px; background:var(--bg-alt); overflow:hidden; border:1px solid var(--line);}
+.journey-pin-bar{height:100%; background:linear-gradient(90deg, var(--gold), var(--gold-bright)); transition:width 0.3s ease;}
+.journey-pin-nums{margin-top:6px; font-size:0.85rem; color:var(--text-dim);}
+.journey-pin-card .ach-card{border:none; padding:0; background:none; box-shadow:none; min-height:0;}
+
+.journey-weekly-controls{display:flex; align-items:center; gap:10px; margin-bottom:14px; flex-wrap:wrap;}
+
+.pill.shared-pill{border-color:var(--gold); color:var(--gold-bright);}
+.pill.journey-cape-pill{border-color:var(--line-bright); color:var(--text-dim); font-style:normal; margin-left:6px;}

@@ -1,0 +1,16 @@
+# macOS
+.DS_Store
+
+# Dependencies (if you ever add a package.json for the function or tooling)
+node_modules/
+
+# Netlify CLI local state (netlify dev / netlify link)
+.netlify/
+
+# Environment variables / secrets — never commit these
+.env
+.env.*
+
+# Editor/OS cruft
+*.swp
+*.log
